@@ -19,6 +19,7 @@ from StringIO import StringIO
 import tempfile
 import subprocess
 import re
+from decimal import Decimal
 
 from priceimg import app, cache
 
@@ -62,7 +63,7 @@ def parse_price(s):
     s = s.strip()
     m = price_regex.match(s)
     price, currency = m.groups()
-    price = float(price)
+    price = Decimal(price)
     if currency is None:
         currency = 'USD'
     return price, currency
@@ -130,16 +131,16 @@ def get_btc_rate(currency):
     r = requests.get(url)
     r.raise_for_status
     data = r.json()
-    per_btc = float(data['24h_avg'])
-    return 1.0 / per_btc
+    per_btc = Decimal(data['24h_avg'])
+    return Decimal(1) / per_btc
 
 
 def get_ltc_per_usd():
     url = 'https://btc-e.com/api/2/ltc_usd/ticker'
     r = requests.get(url)
     data = r.json()
-    usd_per_ltc = float(data['ticker']['avg'])
-    return 1.0 / usd_per_ltc
+    usd_per_ltc = Decimal(data['ticker']['avg'])
+    return Decimal(1) / usd_per_ltc
 
 
 def generate_image(price, currency, color):
